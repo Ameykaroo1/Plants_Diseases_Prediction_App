@@ -5,82 +5,25 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 import streamlit as st
-import subprocess
-import sys
+import gdown
 
-# ── Auto-clone repo + smart path detection ────────────────────────────────────
-REPO_URL = "https://github.com/Ameykaroo1/Plants_Diseases_Prediction_App.git"
-WORKING_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_DIR = os.path.join(WORKING_DIR, "Plants_Diseases_Prediction_App")
+# ── Paths ──────────────────────────────────────────────────────────────────────
+WORKING_DIR   = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH    = os.path.join(WORKING_DIR, "trained_model", "plant_disease_savedmodel")
+CLASS_INDICES = os.path.join(WORKING_DIR, "class_indices.json")
+GDRIVE_FOLDER_ID = "1mgDmd2_fBFEuQloTXK5p8rVeIly8r1MD"
 
-def find_file_in_tree(root: str, filename: str):
-    """Walk the directory tree and return the first path matching filename."""
-    for dirpath, dirnames, filenames in os.walk(root):
-        if filename in filenames:
-            return dirpath          # return the containing folder
-    return None
-
-def find_model_path(search_root: str):
-    """Return the directory that contains saved_model.pb, or None."""
-    return find_file_in_tree(search_root, "saved_model.pb")
-
-def find_class_indices(search_root: str):
-    """Return the full path of class_indices.json, or None."""
-    for dirpath, _, filenames in os.walk(search_root):
-        if "class_indices.json" in filenames:
-            return os.path.join(dirpath, "class_indices.json")
-    return None
-
-def ensure_repo():
-    """Clone repo on first run; also search the WORKING_DIR in case files
-    already exist there from the user's original project layout."""
-    # First check: maybe model already exists in the working dir (user's own copy)
-    model_in_workdir = find_model_path(WORKING_DIR)
-    if model_in_workdir:
-        return   # already present, nothing to do
-
-    # Second check: clone if repo folder missing
-    if not os.path.exists(REPO_DIR):
-        with st.spinner("⬇️ Cloning model repository (first time only)…"):
-            result = subprocess.run(
-                ["git", "clone", "--depth=1", REPO_URL, REPO_DIR],
-                capture_output=True, text=True
-            )
-            if result.returncode != 0:
-                st.error(f"❌ Clone failed:\n\n```\n{result.stderr}\n```")
-                st.info("💡 Alternative: download the repo manually and place it beside main.py")
-                st.stop()
-
-def resolve_paths():
-    """Return (model_path, class_indices_path) by walking the filesystem."""
-    ensure_repo()
-
-    # Search both working dir and cloned repo
-    for search_root in [WORKING_DIR, REPO_DIR]:
-        if not os.path.exists(search_root):
-            continue
-        mp = find_model_path(search_root)
-        ci = find_class_indices(search_root)
-        if mp and ci:
-            return mp, ci
-
-    # Give up with a helpful message
-    st.error("❌ Could not locate `saved_model.pb` or `class_indices.json`.")
-    st.markdown("""
-**Possible fixes:**
-1. Make sure your repo contains `trained_model/plant_disease_savedmodel/saved_model.pb`
-2. Git LFS files may not have downloaded — run `git lfs pull` inside the repo folder
-3. Or manually download the model and place it as:
-   ```
-   Plants_Diseases_Prediction_App/
-     trained_model/
-       plant_disease_savedmodel/
-         saved_model.pb
-         variables/
-     class_indices.json
-   ```
-""")
-    st.stop()
+def ensure_model():
+    """Download model from Google Drive on first run only."""
+    if os.path.exists(os.path.join(MODEL_PATH, "saved_model.pb")):
+        return  # already downloaded
+    os.makedirs(os.path.join(WORKING_DIR, "trained_model"), exist_ok=True)
+    with st.spinner("⬇️ Downloading model from Google Drive (first time only — ~400MB)…"):
+        gdown.download_folder(
+            id=GDRIVE_FOLDER_ID,
+            output=MODEL_PATH,
+            quiet=False
+        )
 
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -445,14 +388,13 @@ def get_disease_info(disease_str: str) -> dict:
 # ── Load model ─────────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def load_model():
-    model_path, _ = resolve_paths()
-    model = tf.saved_model.load(model_path)
+    ensure_model()
+    model = tf.saved_model.load(MODEL_PATH)
     return model
 
 @st.cache_data(show_spinner=False)
 def load_class_indices():
-    _, ci_path = resolve_paths()
-    with open(ci_path) as f:
+    with open(CLASS_INDICES) as f:
         return json.load(f)
 
 def preprocess(image: Image.Image, target_size=(224, 224)):
@@ -500,16 +442,6 @@ st.markdown("""
 with st.spinner("Loading model…"):
     model = load_model()
     class_indices = load_class_indices()
-
-# Debug sidebar — shows resolved paths so you can verify on first run
-with st.sidebar:
-    st.markdown("### 🔧 Debug Info")
-    try:
-        mp, ci = resolve_paths()
-        st.success("Model loaded ✅")
-        st.code(f"Model:  {mp}\nClasses: {ci}", language="text")
-    except Exception as e:
-        st.error(f"Path error: {e}")
 
 # ── How it works ───────────────────────────────────────────────────────────────
 st.markdown("""
