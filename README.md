@@ -1,6 +1,6 @@
----
+﻿---
 title: Plant Disease Prediction
-emoji: ??
+emoji: 🌿
 colorFrom: green
 colorTo: blue
 sdk: docker
