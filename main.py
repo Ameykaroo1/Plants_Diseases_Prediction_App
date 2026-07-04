@@ -549,19 +549,19 @@ if uploaded:
             st.markdown("<div style='margin-top:20px;'>", unsafe_allow_html=True)
             st.markdown(f"""
             <div class="disease-card {severity} anim anim-1">
-                <div class="disease-name">🔬 Cause</div>
+                <div class="disease-name"> Cause</div>
                 <div class="disease-meta">{info['cause']}</div>
             </div>
             <div class="disease-card {severity} anim anim-2">
-                <div class="disease-name">👁️ Symptoms</div>
+                <div class="disease-name"> Symptoms</div>
                 <div class="disease-meta">{info['symptoms']}</div>
             </div>
             <div class="disease-card {severity} anim anim-3">
-                <div class="disease-name">💊 Treatment</div>
+                <div class="disease-name"> Treatment</div>
                 <div class="disease-meta">{info['treatment']}</div>
             </div>
             <div class="disease-card healthy anim anim-4">
-                <div class="disease-name">🛡️ Prevention</div>
+                <div class="disease-name"> Prevention</div>
                 <div class="disease-meta">{info['prevention']}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -605,21 +605,21 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 diseases_data = [
-    ("🍅", "Tomato Early Blight", "Alternaria solani", "danger",
+    ("", "Tomato Early Blight", "Alternaria solani", "danger",
      "Circular brown spots with concentric rings. Starts on older leaves, moves upward."),
-    ("🥔", "Potato Late Blight", "Phytophthora infestans", "danger",
+    ("", "Potato Late Blight", "Phytophthora infestans", "danger",
      "Water-soaked spots turning brown-black rapidly. The disease that caused the Irish Famine."),
-    ("🌽", "Corn Common Rust", "Puccinia sorghi", "warning",
+    ("", "Corn Common Rust", "Puccinia sorghi", "warning",
      "Brick-red to brown pustules scattered across both leaf surfaces."),
-    ("🍇", "Grape Black Rot", "Guignardia bidwellii", "danger",
+    ("", "Grape Black Rot", "Guignardia bidwellii", "danger",
      "Brown circular lesions with black border on leaves; fruit shrivels into black mummies."),
-    ("🍎", "Apple Scab", "Venturia inaequalis", "warning",
+    ("", "Apple Scab", "Venturia inaequalis", "warning",
      "Olive-green to brown velvety spots on leaves and fruit surface."),
-    ("🫑", "Pepper Bacterial Spot", "Xanthomonas campestris", "danger",
+    ("", "Pepper Bacterial Spot", "Xanthomonas campestris", "danger",
      "Small, water-soaked spots with yellow halos on leaves and fruit."),
-    ("🍓", "Strawberry Leaf Scorch", "Diplocarpon earlianum", "warning",
+    ("", "Strawberry Leaf Scorch", "Diplocarpon earlianum", "warning",
      "Small purple-red spots that coalesce into irregular brown dead patches."),
-    ("🌿", "General Powdery Mildew", "Erysiphe spp.", "warning",
+    ("", "General Powdery Mildew", "Erysiphe spp.", "warning",
      "White powdery fungal coating on leaf surface, causes leaf curling and stunting."),
 ]
 
