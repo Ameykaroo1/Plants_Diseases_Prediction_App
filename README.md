@@ -2,8 +2,8 @@
 
 A CNN-based deep learning model that detects **38 disease classes across 14 crop species** from a single leaf image, trained on the PlantVillage dataset and deployed as an interactive web app with Streamlit.
 
-🔗 **Live Demo:** [Click here](https://lnkd.in/dz2_bH6H)
-🔗 **GitHub Repo:** [Click here](https://lnkd.in/dcEXTnWw)
+🔗 **Live Demo:** [Click here](https://karooamey-plant-disease-prediction.hf.space/)
+🔗 **GitHub Repo:** [Click here](https://github.com/Ameykaroo1/Plants_Diseases_Prediction_App)
 
 ---
 
